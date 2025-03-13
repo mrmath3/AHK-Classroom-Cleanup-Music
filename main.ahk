@@ -30,10 +30,10 @@ SetBatchLines, -1  ; Runs script as fast as possible
 ; 🎵 MUSIC & VOLUME SETTINGS
 ; ========================
 VolumeOn := 40  ; Volume percentage when song is playing
-MinPlayTime := 5000  ; Minimum play time in milliseconds (5 sec)
+MinPlayTime := 7000  ; Minimum play time in milliseconds (7 sec)
 FadeStep := 2  ; Volume fade-in step (higher = faster fade)
 FadeDelay := 250  ; Delay between fade-in steps in milliseconds
-CleanupSongPath := "C:\Users\%A_UserName%\Music\Barney Cleanup Song.mp3"  ; Change this to your cleanup song file
+CleanupSongPath := A_ScriptDir . "\Barney Cleanup Song.mp3"
 
 ; ========================
 ; 🔄 SCHEDULE SETTINGS
@@ -122,15 +122,21 @@ CheckSchedule() {
             ToggleSpotifyPlayback()  ; Pause Spotify if it was playing
         }
 
-        ; 🔊 Ensure volume is audible
-        SoundGet, currentVolume
-        if (currentVolume < 5) {
-            SoundSet, 5  ; Set minimum volume if muted
-        }
+        ; 🔊 Start at a very low volume before fading in
+        SoundSet, 2  ; Start at very low volume
 
         ; 🎵 Play the Cleanup Song
         Run, % CleanupSongPath
-        Sleep, MinPlayTime  ; Wait for the song to finish
+        Sleep, 1000  ; Small delay to ensure the file starts playing
+
+        ; 🔊 Gradually Fade In Volume
+        FadeTime := FadeInVolume(VolumeOn)  
+
+        ; Ensure the song plays for the minimum required time
+        RemainingTime := MinPlayTime - FadeTime
+        if (RemainingTime > 0) {
+            Sleep, RemainingTime
+        }
 
         ; ▶ Resume Spotify if it was playing before
         if (SpotifyWasPlaying) {
