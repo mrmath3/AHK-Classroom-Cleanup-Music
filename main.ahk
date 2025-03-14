@@ -138,6 +138,10 @@ CheckSchedule() {
             Sleep, RemainingTime
         }
 
+
+        ; Close the media player so it doesn't clutter the screen
+        WinClose, Media Player
+
         ; ▶ Resume Spotify if it was playing before
         if (SpotifyWasPlaying) {
             ToggleSpotifyPlayback()
